@@ -2,8 +2,9 @@
 # tasks file for rsyslog
 
 - name: Import assert.yml
-  ansible.builtin.import_tasks: assert.yml
-  run_once: yes
+  ansible.builtin.import_tasks:
+    file: assert.yml
+  run_once: true
   delegate_to: localhost
 
 - name: Uninstall conflicting systemd-logger
@@ -66,4 +67,4 @@
   ansible.builtin.service:
     name: "{{ rsyslog_service }}"
     state: started
-    enabled: yes
+    enabled: true

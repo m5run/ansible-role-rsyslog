@@ -16,15 +16,11 @@ galaxy_info:
         - Candidate
     - name: EL
       versions:
-        - "8"
+        - "9"
     - name: Debian
       versions:
         - all
     - name: Fedora
-      versions:
-        - "36"
-        - "37"
-    - name: opensuse
       versions:
         - all
     - name: Ubuntu
@@ -35,5 +31,6 @@ galaxy_info:
     - rsyslog
     - installer
     - package
+    - monitoring
 
 dependencies: []
