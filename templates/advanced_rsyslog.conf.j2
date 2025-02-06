@@ -4,7 +4,6 @@
 # For more information install rsyslog-doc and see
 # /usr/share/doc/rsyslog-doc/html/configuration/index.html
 
-
 #################
 #### MODULES ####
 #################
@@ -89,22 +88,33 @@ $IncludeConfig /etc/rsyslog.d/*.conf
 {% endfor %}
 {% endif %}
 
-{% if rsyslog_remote is defined %}
-#########################
-#### FORWARDING RULE ####
-#########################
 
+#########################
+#### FORWARDING RULES ###
+#########################
+# action(type="omfwd"
+#   # An on-disk queue is created for this action. If the remote host is
+#   # down, messages are spooled to disk and sent when it is up again.
+#   queue.filename="fwdRule1"       # unique name prefix for spool files
+#   queue.maxdiskspace="1g"         # 1gb space limit (use as much as possible)
+#   queue.saveonshutdown="on"       # save messages to disk on shutdown
+#   queue.type="LinkedList"         # run asynchronously
+#   action.resumeRetryCount="-1"    # infinite retries if host is down
+#   # Remote Logging (we use TCP for reliable delivery)
+#   # remote_host is: name/ip, e.g. 192.168.0.1, port optional e.g. 10514
+# Target="remote_host" Port="XXX" Protocol="tcp")
+
+{% if rsyslog_remotes is defined %}
+{% for remote in rsyslog_remotes %}
 action(type="omfwd"
-# # An on-disk queue is created for this action. If the remote host is
-# # down, messages are spooled to disk and sent when it is up again.
-#queue.filename="fwdRule1"       # unique name prefix for spool files
-#queue.maxdiskspace="1g"         # 1gb space limit (use as much as possible)
-#queue.saveonshutdown="on"       # save messages to disk on shutdown
-#queue.type="LinkedList"         # run asynchronously
-#action.resumeRetryCount="-1"    # infinite retries if host is down
-# # Remote Logging (we use TCP for reliable delivery)
-# # remote_host is: name/ip, e.g. 192.168.0.1, port optional e.g. 10514
-#Target="remote_host" Port="XXX" Protocol="tcp")
-Target="{{ rsyslog_remote }}" Port="{{ rsyslog_remote_port }}" Protocol="{{ 'tcp' if rsyslog_remote_tcp else 'udp' }}" {{ '' if not rsyslog_remote_template else 'template="' + rsyslog_remote_template + '"' }})
-# ### end of the forwarding rule ###
+{% if remote.queueSize is defined %}
+  queue.filename="{{ remote.name }}"       
+  queue.maxdiskspace="{{ remote.queueSize }}"         
+  queue.saveonshutdown="on"       
+  queue.type="LinkedList"         
+  action.resumeRetryCount="-1"    
+{% endif %}
+  Target="{{ remote.address }}" Port="{{ '514' if remote.port is not defined else remote.port }}" Protocol="{{ 'udp' if remote.protocol is not defined else remote.protocol }}" {{ '' if remote.template is not defined else 'template="' + remote.template + '"' }})
+
+{% endfor %}
 {% endif %}

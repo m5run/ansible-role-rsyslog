@@ -50,18 +50,18 @@ rsyslog_receiver: false
 # To forward logs to another server, set rsyslog_remote to the hostname or
 # the ipaddress of the receiving rsyslog server.
 # Not setting this variable will not forward logs.
-# rsyslog_remote: server1.example.com
+# rsyslog_remotes:
+#   - name: remote1
+#     address: remote.addr
+#     protocol: tcp  # udp if not defined
+#     port: 514      # 514 if not defined
+#     template:      # no template if not defined
+#     queueSize: 1g  # if not defined queue is disabled
 
 # If rsylog_remote is set, sets the "selector" pattern for determining which
 # messages to send to the remote server.  Default "*.*" sends everything.
 # See `man rsyslog.conf`.
 rsyslog_remote_selector: "*.*"
-
-# If rsylog_remote is set, use TCP if yes. UDP if no.
-rsyslog_remote_tcp: true
-
-# If rsylog_remote is set, destination port to use.
-rsyslog_remote_port: 514
 
 # Set the mode for new directories; only available in legacy template.
 rsyslog_dircreatemode: "0700"
